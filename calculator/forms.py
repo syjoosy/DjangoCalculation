@@ -6,6 +6,7 @@ from .models import Expressions
 class UserForm(forms.ModelForm):
     value = forms.CharField()
     expression = forms.CharField()
+    # enterid = forms.IntegerField()
     # result = forms.IntegerField(null=True)
     # class Meta:
     #     model = User
@@ -13,3 +14,10 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = Expressions
         fields = ['value', 'expression']
+
+class RecieveResult(forms.ModelForm):
+    enterid = forms.IntegerField()
+
+    class Meta:
+        model = Expressions
+        fields = ['enterid']

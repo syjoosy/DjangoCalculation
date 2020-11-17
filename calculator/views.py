@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .forms import UserForm
+from .forms import UserForm, RecieveResult
 from .service import Calculator
 from django.contrib import messages
 import re
@@ -14,7 +14,7 @@ def home(request):
     if request.method == "POST":
         form = UserForm(request.POST)
         if form.is_valid():
-            form.save()
+            # form.save()
 
             value = request.POST.get("value")
             expression = request.POST.get("expression")
@@ -46,8 +46,8 @@ def home(request):
             service_result = calculator.get_extension(expression_and_values)
 
             # messages.success(request, f"Ваша формула {expression} рассчитана! ID: {service_result['expression_id']}")
-            messages.success(request, f"Ваша формула {expression} рассчитана!")
-            return redirect('home')
+            messages.success(request, f"Ваша формула {expression} рассчитана! {service_result}")
+            return redirect('id')
         else:
             userform = UserForm()
 
@@ -56,3 +56,21 @@ def home(request):
     else:
         userform = UserForm()
         return render(request, 'calculator/home.html', {'form': userform})
+
+def ResultRecieve(request):
+    if request.method == "POST":
+        userrform = RecieveResult(request.POST)
+        if userrform.is_valid():
+            expression_id = request.POST.get("enterid")
+            expression_id = {'expression_id': expression_id}
+            calculator = Calculator()
+            expression_result = calculator.get_result(expression_id)
+            messages.success(request, f"Результат: {expression_result}")
+            return redirect('id')
+        else:
+            userrform = RecieveResult()
+
+            return render(request, 'calculator/home.html', {'form': userrform}, {'error': 1})
+    else:
+        userrform = RecieveResult()
+        return render(request, 'calculator/home.html', {'form': userrform})

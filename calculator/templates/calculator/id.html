@@ -23,14 +23,14 @@
 </header>
     {% if messages %}
         {% for mess in messages %}
-            <div class="alert alert-info">{{ mess }}</div>
+                    <div class="alert alert-success">{{ mess }}</div>
         {% endfor %}
     {% endif %}
 
     <form method="POST">
         {% csrf_token %}
         <table>
-            {{ form }}
+            {{ userrform }}
         </table>
         <input type="submit" value="Send">
     </form>

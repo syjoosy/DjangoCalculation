@@ -1,17 +1,26 @@
 from .views import UserForm
 import re
-import _sqlite3
+import psycopg2
 
+con = psycopg2.connect(
+  database="db",
+  user="dbadmin",
+  password="dbadmin",
+  host="localhost",
+  port="5432"
+)
 
-
+print("Database opened successfully")
 
 class Calculator:
 
     def get_extension(self,expression_and_values):
        expression = expression_and_values["expression"]
-       print(expression)
        values = expression_and_values["variables"]
-       print(values)
+       new_values = values.values()
+       result_values = ''
+       for key in new_values:
+           result_values += key + ','
        value = []
        sign = []
        for key in values:
@@ -51,8 +60,28 @@ class Calculator:
            except BaseException:
                pass
        result = value[0]
-       # print(result)
-       conn = _sqlite3.connect("db.sqlite3")  # или :memory: чтобы сохранить в RAM
-       cursor = conn.cursor()
-       cursor.execute("INSERT INTO CALCULATOR VALUES('hello', '123', '5')")
-       conn.commit()
+       cur = con.cursor()
+       cur.execute(
+           f"INSERT INTO Expressions (Expression,Values,Result) VALUES ('{expression}','{result_values}',{result}) RETURNING id"
+       )
+       con.commit()
+       id = str(cur.fetchone())
+       id = id[0:-2]
+       id = id[1:]
+       itog = {'expression_id': id}
+
+       return itog
+
+
+
+    def get_result(self,expression_id):
+        expression_id = expression_id['expression_id']
+        cur = con.cursor()
+        cur.execute(
+            f"SELECT Result FROM Expressions WHERE Id = {expression_id}"
+        )
+        con.commit()
+        result = str(cur.fetchone())
+        result = result[1:-2]
+        result = {'result': int(result)}
+        return result
