@@ -85,3 +85,4 @@ class Calculator:
         result = result[1:-2]
         result = {'result': int(result)}
         return result
+
